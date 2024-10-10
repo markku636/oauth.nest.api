@@ -1,0 +1,35 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")  // MySQL 的連接 URL
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  username    String   @unique
+  password    String
+  clientId    String   @unique
+  clientSecret String  @unique
+  OAuthCodes  OAuthCode[]
+  OAuthTokens OAuthToken[]
+}
+
+model OAuthCode {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  expiresAt DateTime
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model OAuthToken {
+  id          Int      @id @default(autoincrement())
+  accessToken String   @unique
+  refreshToken String  @unique
+  expiresAt   DateTime
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+}

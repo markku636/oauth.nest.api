@@ -1,0 +1,30 @@
+{
+    "nuxt.isNuxtApp": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.fixAll.stylelint": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "[html,javascript,json,xml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "stylelint.validate": ["css", "scss", ".module.scss"],
+    "eslint.alwaysShowStatus": true,
+    "eslint.debug": true,
+    "eslint.format.enable": true,
+    "eslint.validate": ["javascript", "html", "vue", "json", "javascriptreact", "typescript", "typescriptreact"],
+    "eslint.options": {
+        "extensions": [".html", ".js", ".vue", ".jsx", "json", ".tsx"]
+    },
+    "jest.runAllTestsFirst": false,
+    "jest.autoEnable": false,
+    "jest.showCoverageOnLoad": false
+}

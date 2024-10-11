@@ -9,7 +9,7 @@ export class OAuthService {
     constructor(private readonly prisma: PrismaService) {}
 
     // 創建授權碼
-    async createAuthorizationCode(userId: number) {
+    async createAuthorizationCode(username: string, password: string) {
         const result: IApiResultWithData<any> = {
             isSuccess: false,
             returnCode: ApiReturnCode.GeneralError,
@@ -17,8 +17,24 @@ export class OAuthService {
         };
 
         try {
+            // 驗證 email 和 password
             const code = uuidv4();
             const expiresAt = addMinutes(new Date(), 10); // 設定授權碼 10 分鐘內有效
+
+            // todo  帳密格式驗證及加嚴
+
+            const user = await this.prisma.user.findFirst({
+                where: {
+                    username: username,
+                    password: password, // 假設密碼沒有經過哈希處理，這不是推薦的做法
+                },
+            });
+
+            if (!user) {
+                return result;
+            }
+
+            let userId: number = user.id;
 
             const oauthCode = await this.prisma.oAuthCode.create({
                 data: {

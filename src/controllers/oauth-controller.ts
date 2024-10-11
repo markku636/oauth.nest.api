@@ -1,9 +1,20 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Render } from '@nestjs/common';
 import { OAuthService } from 'src/services/oauth.service';
 
 @Controller('oauth')
 export class OAuthController {
     constructor(private readonly oauthService: OAuthService) {}
+
+    @Get('login')
+    @Render('oauth/index') // 渲染名為 'oauth/index' 的模板
+    OAuthPage(@Query('redirect_uri') redirectUri: string): object {
+        // 檢查是否有 redirectUri，並將其傳遞到模板
+        return {
+            title: 'Title',
+            subtitle: 'Subtitle',
+            redirectUri: redirectUri || 'default_redirect_uri', // 如果沒提供，使用預設值
+        };
+    }
 
     // 測試用路徑
     @Get('test')
@@ -14,9 +25,13 @@ export class OAuthController {
 
     // 處理生成授權碼的邏輯
     @Post('authorize')
-    async authorize(@Body() body: { userId: number }) {
-        const { userId } = body;
-        const result = await this.oauthService.createAuthorizationCode(userId);
+    async authorize(@Body() body: { username: string; password: string }) {
+        const { username, password } = body;
+
+        const result = await this.oauthService.createAuthorizationCode(
+            username,
+            password,
+        );
 
         return result;
     }

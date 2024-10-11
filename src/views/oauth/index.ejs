@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+    <head>
+        <title><%= title %></title>
+    </head>
+    <body>
+        <h1><%= subtitle %></h1>
+
+        <!-- 將 redirect_uri 添加到表單或鏈接 -->
+        <form action="<%= redirectUri %>" method="POST">
+            <input type="hidden" name="client_id" value="YOUR_CLIENT_ID" />
+            <!-- 其他 OAuth 相關的字段 -->
+            <button type="submit">Login with OAuth</button>
+        </form>
+    </body>
+</html>

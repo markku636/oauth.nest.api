@@ -33,3 +33,8 @@ model OAuthToken {
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
 }
+
+
+// npx prisma migrate dev --name init
+// npx prisma generate
+// npm install @prisma/client

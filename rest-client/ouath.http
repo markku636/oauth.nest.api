@@ -1,0 +1,18 @@
+
+# @name test
+curl -X GET "http://localhost:3000/oauth/test?userId=123"
+
+# @name authorize
+curl -X POST http://localhost:3000/oauth/authorize \
+  -H "Content-Type: application/json" \
+  -d '{"userId": 1}'
+
+# @name token
+curl -X POST http://localhost:3000/oauth/token \
+  -H "Content-Type: application/json" \
+  -d '{"code": "your-authorization-code", "clientId": "your-client-id", "clientSecret": "your-client-secret"}'
+
+# @name refresh
+curl -X POST http://localhost:3000/oauth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{"refreshToken": "your-refresh-token"}'

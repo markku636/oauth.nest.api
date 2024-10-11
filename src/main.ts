@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as basicAuth from 'express-basic-auth';
 import { join } from 'path';
 import { AppModule } from './app.module';
 
@@ -14,9 +15,19 @@ async function bootstrap() {
         .addTag('hello world!')
         .build();
 
+    const swaggerDefaultUrl = '/docs';
+
+    app.use(
+        [swaggerDefaultUrl], // Swagger 文檔的路徑
+        basicAuth({
+            users: { admin: '123' }, // 設置用戶名和密碼
+            challenge: true, // 會自動彈出認證提示
+        }),
+    );
+
     const document = SwaggerModule.createDocument(app, config);
 
-    SwaggerModule.setup('doc', app, document);
+    SwaggerModule.setup(swaggerDefaultUrl, app, document);
 
     app.setViewEngine('ejs');
     app.setBaseViewsDir(join(__dirname, '..', '/src/views'));

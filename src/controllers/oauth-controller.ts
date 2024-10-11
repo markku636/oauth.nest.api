@@ -1,20 +1,11 @@
-import {
-    Body,
-    Controller,
-    Get,
-    HttpException,
-    HttpStatus,
-    Post,
-    Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { OAuthService } from 'src/services/oauth.service';
 
 @Controller('oauth')
 export class OAuthController {
     constructor(private readonly oauthService: OAuthService) {}
 
-    // 處理生成授權碼的邏輯
-
+    // 測試用路徑
     @Get('test')
     async getHello(@Query() query): Promise<string> {
         // 非同步返回結果
@@ -26,6 +17,7 @@ export class OAuthController {
     async authorize(@Body() body: { userId: number }) {
         const { userId } = body;
         const result = await this.oauthService.createAuthorizationCode(userId);
+
         return result;
     }
 
@@ -36,32 +28,13 @@ export class OAuthController {
     ) {
         const { code, clientId, clientSecret } = body;
 
-        // 檢查授權碼是否合法
-        const oauthCode = await this.oauthService.validateAuthorizationCode(
+        const result = await this.oauthService.authorizationCodeForToken(
             code,
-        );
-        if (!oauthCode) {
-            throw new HttpException(
-                'Invalid authorization code',
-                HttpStatus.UNAUTHORIZED,
-            );
-        }
-
-        // 這裡可以加入更多檢查邏輯來驗證 clientId 和 clientSecret
-
-        // 生成存取令牌
-        const token = await this.oauthService.createAccessToken(
-            oauthCode.userId,
+            clientId,
+            clientSecret,
         );
 
-        // 刪除已使用的授權碼
-        await this.oauthService.deleteAuthorizationCode(code);
-
-        return {
-            access_token: token.accessToken,
-            refresh_token: token.refreshToken,
-            expires_in: 3600, // 1 小時有效
-        };
+        return result;
     }
 
     // 處理刷新令牌的邏輯
@@ -69,19 +42,10 @@ export class OAuthController {
     async refreshToken(@Body() body: { refreshToken: string }) {
         const { refreshToken } = body;
 
-        const newToken = await this.oauthService.refreshAccessToken(
+        const tokenResult = await this.oauthService.refreshAccessToken(
             refreshToken,
         );
-        if (!newToken) {
-            throw new HttpException(
-                'Invalid refresh token',
-                HttpStatus.UNAUTHORIZED,
-            );
-        }
 
-        return {
-            access_token: newToken.accessToken,
-            expires_in: 3600, // 1 小時有效
-        };
+        return tokenResult;
     }
 }

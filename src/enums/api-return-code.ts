@@ -11,6 +11,9 @@ export enum ApiReturnCode {
 
     // 登入相關 400xx
     InvalidAccessToken = 40001,
+    RefreshTokenInvalid = 40011,
+    AccessTokenInvalidOrExpired = 400012,
+    AuthorizationCodeInvalidOrExpired = 40013,
     AlreadyLoginInOtherPlace = 40002,
     AccessTokenExpired = 40003,
     UserNotExist = 40004,

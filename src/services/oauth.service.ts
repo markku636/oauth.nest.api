@@ -1,3 +1,4 @@
+import { ApiReturnCode } from '@/enums/api-return-code';
 import { Injectable } from '@nestjs/common';
 import { addHours, addMinutes } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,18 +10,32 @@ export class OAuthService {
 
     // 創建授權碼
     async createAuthorizationCode(userId: number) {
-        const code = uuidv4();
-        const expiresAt = addMinutes(new Date(), 10); // 設定授權碼 10 分鐘內有效
+        const result: IApiResultWithData<any> = {
+            isSuccess: false,
+            returnCode: ApiReturnCode.GeneralError,
+            data: undefined,
+        };
 
-        const oauthCode = await this.prisma.oAuthCode.create({
-            data: {
-                code,
-                expiresAt,
-                userId,
-            },
-        });
+        try {
+            const code = uuidv4();
+            const expiresAt = addMinutes(new Date(), 10); // 設定授權碼 10 分鐘內有效
 
-        return oauthCode;
+            const oauthCode = await this.prisma.oAuthCode.create({
+                data: {
+                    code,
+                    expiresAt,
+                    userId,
+                },
+            });
+
+            result.data = oauthCode;
+            result.returnCode = ApiReturnCode.Success;
+            result.isSuccess = true;
+        } catch (e) {
+            // todo write log
+        }
+
+        return result;
     }
 
     // 驗證授權碼

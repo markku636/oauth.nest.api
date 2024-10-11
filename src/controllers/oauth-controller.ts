@@ -25,10 +25,8 @@ export class OAuthController {
     @Post('authorize')
     async authorize(@Body() body: { userId: number }) {
         const { userId } = body;
-        const oauthCode = await this.oauthService.createAuthorizationCode(
-            userId,
-        );
-        return { code: oauthCode.code };
+        const result = await this.oauthService.createAuthorizationCode(userId);
+        return result;
     }
 
     // 處理授權碼交換存取令牌

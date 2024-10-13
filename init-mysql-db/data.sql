@@ -1,5 +1,5 @@
 -- Insert 5 random users
-INSERT INTO `User` (username, password, clientId, clientSecret)
+INSERT INTO `User` (email, password, clientId, clientSecret)
 VALUES 
 ('user1', 'password123', 'clientId1', 'clientSecret1'),
 ('user2', 'password456', 'clientId2', 'clientSecret2'),

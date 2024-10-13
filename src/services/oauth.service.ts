@@ -9,7 +9,7 @@ export class OAuthService {
     constructor(private readonly prisma: PrismaService) {}
 
     // 創建授權碼
-    async createAuthorizationCode(username: string, password: string) {
+    async createAuthorizationCode(email: string, password: string) {
         const result: IApiResultWithData<any> = {
             isSuccess: false,
             returnCode: ApiReturnCode.GeneralError,
@@ -25,7 +25,7 @@ export class OAuthService {
 
             const user = await this.prisma.user.findFirst({
                 where: {
-                    username: username,
+                    email: email,
                     password: password, // 假設密碼沒有經過哈希處理，這不是推薦的做法
                 },
             });

@@ -25,11 +25,11 @@ export class OAuthController {
 
     // 處理生成授權碼的邏輯
     @Post('authorize')
-    async authorize(@Body() body: { username: string; password: string }) {
-        const { username, password } = body;
+    async authorize(@Body() body: { email: string; password: string }) {
+        const { email, password } = body;
 
         const result = await this.oauthService.createAuthorizationCode(
-            username,
+            email,
             password,
         );
 

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './controllers/app.controller';
-import { OAuthController } from './controllers/oauth-controller';
+import { OAuthController } from './controllers/oauth.controller';
 import { AppService } from './services/app.service';
 import { OAuthService } from './services/oauth.service';
 import { PrismaService } from './services/prisma.service';

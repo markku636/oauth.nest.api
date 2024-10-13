@@ -5,6 +5,66 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title><%= title %></title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            async function handleLogin(event) {
+                event.preventDefault(); // 阻止表單的默認提交行為
+
+                // 獲取輸入框的值
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const redirectUri =
+                    document.getElementsByName('redirectUri')[0].value;
+                const clientId =
+                    document.getElementsByName('client_id')[0].value;
+
+                // 清除之前的錯誤訊息
+                document.getElementById('emailError').innerText = '';
+                document.getElementById('passwordError').innerText = '';
+
+                try {
+                    // 發送 POST 請求到後端進行驗證
+                    const response = await fetch('/oauth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email,
+                            password,
+                            redirectUri,
+                            client_id: clientId,
+                        }),
+                    });
+
+                    // 解析返回的 JSON 結果
+                    const result = await response.json();
+
+                    if (response.ok && result.isSuccess) {
+                        // 如果驗證通過，重定向到指定的 URL
+                        window.location.href = result.redirectUri;
+                    } else {
+                        // 顯示後端返回的驗證錯誤訊息
+                        if (result.validation) {
+                            if (result.validation.email) {
+                                document.getElementById(
+                                    'emailError',
+                                ).innerText = result.validation.email;
+                            }
+                            if (result.validation.password) {
+                                document.getElementById(
+                                    'passwordError',
+                                ).innerText = result.validation.password;
+                            }
+                        } else {
+                            alert('Login failed: ' + result.message);
+                        }
+                    }
+                } catch (error) {
+                    // 如果出現網絡錯誤，顯示提示
+                    alert('An error occurred: ' + error.message);
+                }
+            }
+        </script>
     </head>
     <body class="bg-gray-100 h-screen flex items-center justify-center">
         <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
@@ -17,7 +77,11 @@
             </p>
 
             <!-- OAuth 登入表單 -->
-            <form action="/oauth/login" method="POST" class="space-y-4">
+            <form
+                id="loginForm"
+                class="space-y-4"
+                onsubmit="handleLogin(event)"
+            >
                 <input type="hidden" name="client_id" value="YOUR_CLIENT_ID" />
                 <input
                     type="hidden"
@@ -39,6 +103,8 @@
                         required
                         class="mt-1 p-2 w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     />
+                    <span id="emailError" class="text-red-500 text-sm"></span>
+                    <!-- Error message for email -->
                 </div>
 
                 <!-- 密碼輸入框 -->
@@ -55,6 +121,11 @@
                         required
                         class="mt-1 p-2 w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     />
+                    <span
+                        id="passwordError"
+                        class="text-red-500 text-sm"
+                    ></span>
+                    <!-- Error message for password -->
                 </div>
 
                 <!-- 登入按鈕 -->

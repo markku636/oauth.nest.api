@@ -8,7 +8,7 @@ export enum ApiReturnCode {
     ZipCodeIncorrect = 30005, // "郵遞區號格式不正確"
     StockNotEnough = 30006, // "庫存不足"
     OutOfStock = 30007, // "無庫存"
-
+    ValidationError = 30008, // "驗證錯誤"
     // 登入相關 400xx
     InvalidAccessToken = 40001,
     RefreshTokenInvalid = 40011,

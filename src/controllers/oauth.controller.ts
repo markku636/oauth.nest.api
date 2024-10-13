@@ -1,4 +1,7 @@
+import { ApiReturnCode } from '@/enums/api-return-code';
 import { LoginDto } from '@/models/login.dto';
+import { formatValidationErrors } from '@/utils/validation.helper';
+
 import {
     Body,
     Controller,
@@ -7,9 +10,9 @@ import {
     Query,
     Render,
     Res,
-    UsePipes,
-    ValidationPipe,
 } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
+import { validate } from 'class-validator';
 import { Response } from 'express';
 import { OAuthService } from 'src/services/oauth.service';
 
@@ -29,26 +32,42 @@ export class OAuthController {
     }
 
     @Post('login')
-    @UsePipes(
-        new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
-    )
     async login(
         @Body() loginDto: LoginDto,
         @Res() res: Response,
     ): Promise<any> {
-        const { email, password } = loginDto;
+        // Helper function to format validation errors
 
-        // Add your authentication logic here
-        // For example, you can validate the credentials and generate a token
+        const newDTO = plainToClass(LoginDto, loginDto);
 
-        const result = await this.oauthService.createAuthorizationCode(
-            email,
-            password,
-        );
+        const errors = await validate(newDTO);
 
-        // After successful login, redirect the user to the original website
-        const originalWebsiteUrl = loginDto.redirectUri + '?code=123456';
-        return res.redirect(originalWebsiteUrl);
+        // If there are validation errors, return them
+        if (errors.length > 0) {
+            let result: IApiResult = {
+                isSuccess: false,
+                returnCode: ApiReturnCode.ValidationError,
+                validation: formatValidationErrors(errors),
+            };
+
+            return res.status(200).json(result);
+        }
+
+        // // Simulate a result from your OAuth service
+        // const result = await this.oauthService.createAuthorizationCode(
+        //     email,
+        //     password,
+        // );
+
+        // // Redirect on success
+        // if (result.isSuccess) {
+        //     const originalWebsiteUrl = loginDto.redirectUri + '?code=123456';
+        //     return res.redirect(originalWebsiteUrl);
+        // }
+
+        // Return a failure response
+        // return res.status(400).json(result);
+        return res.json({ isSuccess: true });
     }
 
     // 處理授權碼交換存取令牌

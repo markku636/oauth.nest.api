@@ -18,7 +18,7 @@ export enum ApiReturnCode {
     AccessTokenExpired = 40003,
     UserNotExist = 40004,
     UsernameOrPasswordIsIncorrect = 40005,
-    TurnstileFail = 40006,
+
     AccountNotActivated = 40007,
     VerificationCodeFail = 40008, // 重設密碼驗證碼錯誤
     CustNoAlreadyUsed = 41009,
@@ -36,16 +36,6 @@ export enum ApiReturnCode {
     PreCheckSkusStockFail = 41007,
     PreCheckModelStockFail = 41008,
     QuantityLessThan1 = 41010,
-    // 支付相關 42xxx
-    PaymentCodeNotExisted = 42001,
-    PaymentMethodsCountryNotAllow = 42002,
-    PaymentIsDsiable = 42003,
-
-    // 結帳相關 43xxx
-    TempOrderVaildError = 43001,
-    OrderVaildError = 43002,
-    GetFinalAmountFail = 43003,
-    ModelVaildError = 43004,
 
     // 一般
     Authorize = 40100,

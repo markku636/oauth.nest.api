@@ -1,4 +1,5 @@
 import { ApiReturnCode } from '@/enums/api-return-code';
+import { LoginDto } from '@/models/login.dto';
 import { Injectable } from '@nestjs/common';
 import { addHours, addMinutes } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,7 +10,7 @@ export class OAuthService {
     constructor(private readonly prisma: PrismaService) {}
 
     // 創建授權碼
-    async createAuthorizationCode(email: string, password: string) {
+    async createAuthorizationCode(loginDto: LoginDto) {
         const result: IApiResultWithData<any> = {
             isSuccess: false,
             returnCode: ApiReturnCode.GeneralError,
@@ -25,12 +26,13 @@ export class OAuthService {
 
             const user = await this.prisma.user.findFirst({
                 where: {
-                    email: email,
-                    password: password, // 假設密碼沒有經過哈希處理，這不是推薦的做法
+                    email: loginDto.email,
+                    password: loginDto.password, // 假設密碼沒有經過哈希處理，這不是推薦的做法
                 },
             });
 
             if (!user) {
+                result.returnCode = ApiReturnCode.UserNotExist;
                 return result;
             }
 

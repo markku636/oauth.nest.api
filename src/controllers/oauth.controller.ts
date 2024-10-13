@@ -53,17 +53,14 @@ export class OAuthController {
             return res.status(200).json(result);
         }
 
-        // // Simulate a result from your OAuth service
-        // const result = await this.oauthService.createAuthorizationCode(
-        //     email,
-        //     password,
-        // );
+        // Simulate a result from your OAuth service
+        const result = await this.oauthService.createAuthorizationCode(newDTO);
 
-        // // Redirect on success
-        // if (result.isSuccess) {
-        //     const originalWebsiteUrl = loginDto.redirectUri + '?code=123456';
-        //     return res.redirect(originalWebsiteUrl);
-        // }
+        // Redirect on success
+        if (result.isSuccess) {
+            // const originalWebsiteUrl = loginDto.redirectUri + '?code=123456';
+            return res.status(200).json(result);
+        }
 
         // Return a failure response
         // return res.status(400).json(result);

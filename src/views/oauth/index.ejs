@@ -12,17 +12,25 @@
             <p class="text-lg text-gray-600 mb-6 text-center">
                 <%= subtitle %>
             </p>
+            <p class="text-lg text-gray-600 mb-6 text-center">
+                <%= redirectUri %>
+            </p>
 
             <!-- OAuth 登入表單 -->
-            <form action="<%= redirectUri %>" method="POST" class="space-y-4">
+            <form action="/oauth/login" method="POST" class="space-y-4">
                 <input type="hidden" name="client_id" value="YOUR_CLIENT_ID" />
+                <input
+                    type="hidden"
+                    name="redirectUri"
+                    value="<%= redirectUri %>"
+                />
 
                 <!-- 帳號輸入框 -->
                 <div>
                     <label
                         for="email"
                         class="block text-sm font-medium text-gray-700"
-                        >Username</label
+                        >Email</label
                     >
                     <input
                         type="text"
@@ -57,15 +65,6 @@
                     Login with OAuth
                 </button>
             </form>
-
-            <!-- 額外選項 -->
-            <p class="text-center text-gray-500 mt-4">or</p>
-            <a
-                href="/signup"
-                class="block text-center text-blue-500 hover:underline"
-            >
-                Create an account
-            </a>
         </div>
     </body>
 </html>

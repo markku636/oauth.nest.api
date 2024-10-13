@@ -1,4 +1,16 @@
-import { Body, Controller, Get, Post, Query, Render } from '@nestjs/common';
+import { LoginDto } from '@/models/login.dto';
+import {
+    Body,
+    Controller,
+    Get,
+    Post,
+    Query,
+    Render,
+    Res,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common';
+import { Response } from 'express';
 import { OAuthService } from 'src/services/oauth.service';
 
 @Controller('oauth')
@@ -10,30 +22,33 @@ export class OAuthController {
     OAuthPage(@Query('redirect_uri') redirectUri: string): object {
         // 檢查是否有 redirectUri，並將其傳遞到模板
         return {
-            title: 'Title',
-            subtitle: 'Subtitle',
+            title: 'Jkopay 登入',
+            subtitle: '是否允許Cool 3C登入',
             redirectUri: redirectUri || 'default_redirect_uri', // 如果沒提供，使用預設值
         };
     }
 
-    // 測試用路徑
-    @Get('test')
-    async getHello(@Query() query): Promise<string> {
-        // 非同步返回結果
-        return Promise.resolve(JSON.stringify(query));
-    }
+    @Post('login')
+    @UsePipes(
+        new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    )
+    async login(
+        @Body() loginDto: LoginDto,
+        @Res() res: Response,
+    ): Promise<any> {
+        const { email, password } = loginDto;
 
-    // 處理生成授權碼的邏輯
-    @Post('authorize')
-    async authorize(@Body() body: { email: string; password: string }) {
-        const { email, password } = body;
+        // Add your authentication logic here
+        // For example, you can validate the credentials and generate a token
 
         const result = await this.oauthService.createAuthorizationCode(
             email,
             password,
         );
 
-        return result;
+        // After successful login, redirect the user to the original website
+        const originalWebsiteUrl = loginDto.redirectUri + '?code=123456';
+        return res.redirect(originalWebsiteUrl);
     }
 
     // 處理授權碼交換存取令牌
@@ -62,5 +77,12 @@ export class OAuthController {
         );
 
         return tokenResult;
+    }
+
+    // 測試用路徑
+    @Get('test')
+    async getHello(@Query() query): Promise<string> {
+        // 非同步返回結果
+        return Promise.resolve(JSON.stringify(query));
     }
 }

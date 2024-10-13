@@ -58,7 +58,7 @@ export class OAuthController {
 
         // Redirect on success
         if (result.isSuccess) {
-            // const originalWebsiteUrl = loginDto.redirectUri + '?code=123456';
+            // Perform the server-side redirect
             return res.status(200).json(result);
         }
 

@@ -8,6 +8,9 @@ export class AppController {
     @Get()
     @Render('index')
     getHello(): object {
-        return { title: 'nest oauth api', subtitle: 'welcome' };
+        return {
+            title: 'nest oauth api',
+            subtitle: 'Wwagger 帳號:admin 密碼: 123 ',
+        };
     }
 }

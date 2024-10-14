@@ -24,14 +24,13 @@ curl -X POST "http://localhost:3000/oauth/login" \
 }'
 
 
-# @name verify
+# @name validate
 @code={{login.response.body.data.code}}
 curl -X POST http://localhost:3000/oauth/validate \
 -H "Content-Type: application/json" \
 -d '{
   "code": "{{code}}"
 }'
-
 
 # @name token
 curl -X POST http://localhost:3000/oauth/token \

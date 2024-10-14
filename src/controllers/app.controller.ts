@@ -10,7 +10,7 @@ export class AppController {
     getHello(): object {
         return {
             title: 'nest oauth api',
-            subtitle: 'Wwagger 帳號:admin 密碼: 123 ',
+            subtitle: 'Swagger 帳號:admin 密碼: 123 ',
         };
     }
 }

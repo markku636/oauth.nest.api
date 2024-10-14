@@ -8,6 +8,6 @@ export class AppController {
     @Get()
     @Render('index')
     getHello(): object {
-        return { title: 'Title', subtitle: 'Subtitle' };
+        return { title: 'nest oauth api', subtitle: 'welcome' };
     }
 }

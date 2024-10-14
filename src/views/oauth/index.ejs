@@ -7,6 +7,7 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
             async function handleLogin(event) {
+                debugger;
                 event.preventDefault(); // 阻止表單的默認提交行為
 
                 // 獲取輸入框的值
@@ -37,8 +38,10 @@
                     const result = await response.json();
 
                     if (response.ok && result.isSuccess) {
+                        debugger;
                         // 如果驗證通過，重定向到指定的 URL
-                        window.location.href = result.redirectUri;
+                        window.location.href =
+                            redirectUri + '?code=' + result.data.code;
                     } else {
                         // 顯示後端返回的驗證錯誤訊息
                         if (result.validation) {

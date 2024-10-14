@@ -42,6 +42,9 @@ export class OAuthService {
 
             if (!user) {
                 result.returnCode = ApiReturnCode.UserNotExist;
+                result.validation = {
+                    email: 'User or Password is incorrect',
+                };
                 return result;
             }
 

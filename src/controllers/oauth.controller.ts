@@ -1,6 +1,6 @@
-import { ApiReturnCode } from '@/enums/api-return-code';
-import { LoginDto } from '@/models/login.dto';
-import { formatValidationErrors } from '@/utils/validation.helper';
+import { LoginDto } from '@/models/oauth/login.dto';
+import { VerifyCodeDto } from '@/models/oauth/validate.dto';
+import { generalValidateDto } from '@/utils/validation.helper';
 
 import {
     Body,
@@ -11,8 +11,6 @@ import {
     Render,
     Res,
 } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
-import { validate } from 'class-validator';
 import { Response } from 'express';
 import { OAuthService } from 'src/services/oauth.service';
 
@@ -32,58 +30,41 @@ export class OAuthController {
     }
 
     @Post('login')
-    async login(
-        @Body() loginDto: LoginDto,
-        @Res() res: Response,
-    ): Promise<any> {
-        // Helper function to format validation errors
+    async login(@Body() loginDto: LoginDto, @Res() res: Response) {
+        let validateResult = await generalValidateDto<LoginDto>(
+            LoginDto,
+            loginDto,
+        );
 
-        const newDTO = plainToClass(LoginDto, loginDto);
-
-        const errors = await validate(newDTO);
-
-        // If there are validation errors, return them
-        if (errors.length > 0) {
-            let result: IApiResult = {
-                isSuccess: false,
-                returnCode: ApiReturnCode.ValidationError,
-                validation: formatValidationErrors(errors),
-            };
-
-            return res.status(200).json(result);
+        if (!validateResult.isSuccess) {
+            return res.status(200).json(validateResult);
         }
 
-        // Simulate a result from your OAuth service
-        const result = await this.oauthService.createAuthorizationCode(newDTO);
+        const result = await this.oauthService.createAuthorizationCode(
+            loginDto,
+        );
 
-        // Redirect on success
-        if (result.isSuccess) {
-            // Perform the server-side redirect
-            return res.status(200).json(result);
-        }
-
-        // Return a failure response
-        // return res.status(400).json(result);
-        return res.json({ isSuccess: true });
+        return res.status(200).json(result);
     }
 
     // 處理授權碼交換存取令牌
-    @Post('token')
-    async token(
-        @Body() body: { code: string; clientId: string; clientSecret: string },
-    ) {
-        const { code, clientId, clientSecret } = body;
-
-        const result = await this.oauthService.authorizationCodeForToken(
-            code,
-            clientId,
-            clientSecret,
+    @Post('validate')
+    async Validate(@Body() verifyCodeDto: VerifyCodeDto, @Res() res: Response) {
+        let validateResult = await generalValidateDto<VerifyCodeDto>(
+            VerifyCodeDto,
+            verifyCodeDto,
         );
 
-        return result;
+        if (!validateResult.isSuccess) {
+            return res.status(200).json(validateResult);
+        }
+
+        const result = await this.oauthService.validateCode(verifyCodeDto);
+
+        return res.status(200).json(result);
     }
 
-    // 處理刷新令牌的邏輯
+    // todo 處理刷新令牌的邏輯 (暫時不做)
     @Post('refresh')
     async refreshToken(@Body() body: { refreshToken: string }) {
         const { refreshToken } = body;
@@ -98,7 +79,6 @@ export class OAuthController {
     // 測試用路徑
     @Get('test')
     async getHello(@Query() query): Promise<string> {
-        // 非同步返回結果
-        return Promise.resolve(JSON.stringify(query));
+        return await JSON.stringify(query);
     }
 }

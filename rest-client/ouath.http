@@ -2,10 +2,36 @@
 # @name test
 curl -X GET "http://localhost:3000/oauth/test?userId=123"
 
-# @name authorize
-curl -X POST http://localhost:3000/oauth/authorize \
-  -H "Content-Type: application/json" \
-  -d '{"userId": 1}'
+
+
+# @name loginError
+curl -X POST "http://localhost:3000/oauth/login" \
+-H "Content-Type: application/json" \
+-d '{
+    "email": "",
+    "password": "password123",
+    "redirectUri": "http://localhost:3001/oauth/authorize"
+}'
+
+
+# @name login
+curl -X POST "http://localhost:3000/oauth/login" \
+-H "Content-Type: application/json" \
+-d '{
+    "email": "user1@example.com",
+    "password": "password123",
+    "redirectUri": "http://localhost:3001/oauth/authorize"
+}'
+
+
+# @name verify
+@code={{login.response.body.data.code}}
+curl -X POST http://localhost:3000/oauth/validate \
+-H "Content-Type: application/json" \
+-d '{
+  "code": "{{code}}"
+}'
+
 
 # @name token
 curl -X POST http://localhost:3000/oauth/token \

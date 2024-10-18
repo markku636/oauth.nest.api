@@ -1,30 +1,24 @@
-FROM node:lts as builder
+# Use Node.js 20.11.1 base image
+FROM node:20.11.1-alpine
 
-# Create app directory
-WORKDIR /usr/src/app
+# Set working directory
+WORKDIR /app
 
-# Install app dependencies
-COPY package.json yarn.lock ./
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
-RUN yarn install --frozen-lockfile
+# Install dependencies
+RUN npm cache clean --force
+RUN npm install --legacy-peer-deps
 
+# Copy the rest of the application code
 COPY . .
 
-RUN yarn build
+# Generate Prisma Client code
+RUN npx prisma generate
 
-FROM node:lts-slim
+# Expose the port the app runs on, here, I was using port 3333
+EXPOSE 3000
 
-ENV NODE_ENV production
-USER node
-
-# Create app directory
-WORKDIR /usr/src/app
-
-# Install app dependencies
-COPY package.json yarn.lock ./
-
-RUN yarn install --production --frozen-lockfile
-
-COPY --from=builder /usr/src/app/dist ./dist
-
-CMD [ "node", "dist/main.js" ]
+# Command to run the app
+CMD [  "npm", "run", "start:dev" ]

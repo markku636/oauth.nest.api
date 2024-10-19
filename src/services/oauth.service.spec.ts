@@ -1,6 +1,6 @@
-import { encryptPassword } from '@/utils/encrypt';
 import * as bcrypt from 'bcrypt';
 import * as dotenv from 'dotenv';
+import { encryptPassword } from '../utils/encrypt'; // todo alias path is not working
 
 dotenv.config(); // 這行會載入.env文件
 
@@ -15,7 +15,7 @@ describe('OAuthService', () => {
         const expectedHash =
             '$2b$10$ibQugUYqT.1RvqOZA3AqxudHDbMUh8ydc2Sy7N.LcVNHdqhvESl7i';
 
-        // 隨機產生 salt   bcrypt.genSaltSync(saltRounds);
+        // 隨機產生 salt bcrypt.genSaltSync(saltRounds);
         const salt = process.env.SALT;
         const hash = await encryptPassword(password, salt);
         console.log(hash); // 這裡會打印出加密後的哈希值 // '$2b$10$ibQugUYqT.1RvqOZA3AqxudHDbMUh8ydc2Sy7N.LcVNHdqhvESl7i'

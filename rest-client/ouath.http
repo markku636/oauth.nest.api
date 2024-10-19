@@ -26,18 +26,26 @@ curl -X POST "http://localhost:3000/oauth/login" \
 
 # @name validate
 @code={{login.response.body.data.code}}
+@clientId='ABC123456'
 curl -X POST http://localhost:3000/oauth/validate \
 -H "Content-Type: application/json" \
 -d '{
-  "code": "{{code}}"
+  "code": "{{code}}",
+  "clientId": "{{clientId}}"
 }'
 
-# @name token
-curl -X POST http://localhost:3000/oauth/token \
-  -H "Content-Type: application/json" \
-  -d '{"code": "your-authorization-code", "clientId": "your-client-id", "clientSecret": "your-client-secret"}'
 
-# @name refresh
-curl -X POST http://localhost:3000/oauth/refresh \
-  -H "Content-Type: application/json" \
-  -d '{"refreshToken": "your-refresh-token"}'
+
+
+
+
+# @name getProtectedData
+@accessToken={{validate.response.body.data.accessToken}}
+curl -X POST http://localhost:3000/oauth/get-protected-data \
+-H "Authorization: Bearer {{accessToken}}"
+
+
+# # @name refresh
+# curl -X POST http://localhost:3000/oauth/refresh \
+#   -H "Content-Type: application/json" \
+#   -d '{"refreshToken": "your-refresh-token"}'

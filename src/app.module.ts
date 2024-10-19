@@ -4,6 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './controllers/app.controller';
 import { OAuthController } from './controllers/oauth.controller';
 import { AppService } from './services/app.service';
+
 import { OAuthService } from './services/oauth.service';
 import { PrismaService } from './services/prisma.service';
 
@@ -11,7 +12,7 @@ import { PrismaService } from './services/prisma.service';
     imports: [
         ConfigModule.forRoot({ isGlobal: true }), // 加載 .env 文件，並設置為全局可用
         JwtModule.register({
-            secret: 'fe8d7a94fbcf7e4d3c9a2b6889a9ed6ef1bca3df5a4b9e1d23cf67b4a5879d5b', // 你的秘密金鑰
+            secret: process.env.JWT_SECRET, // 你的秘密金鑰
             signOptions: { expiresIn: '12h' }, // token 有效時間
         }),
     ], // 匯入其他模組

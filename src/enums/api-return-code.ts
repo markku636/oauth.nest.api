@@ -18,7 +18,7 @@ export enum ApiReturnCode {
     AccessTokenExpired = 40003,
     UserNotExist = 40004,
     UsernameOrPasswordIsIncorrect = 40005,
-
+    ClientIdInvalid = 40006,
     AccountNotActivated = 40007,
     VerificationCodeFail = 40008, // 重設密碼驗證碼錯誤
     CustNoAlreadyUsed = 41009,

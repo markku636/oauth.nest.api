@@ -153,6 +153,13 @@ export class OAuthService {
         return result;
     }
 
+    async validateClientId(clientId: string): Promise<boolean> {
+        let validClientIds: string[] = ['ABC123456', 'XYZ987654']; // 可以從資料庫或其他地方取得
+
+        // 檢查 clientId 是否在清單中
+        return await validClientIds.includes(clientId);
+    }
+
     async validateCode(
         verifyCodeDto: VerifyCodeDto,
     ): Promise<IApiResultWithData<AccessTokenRes>> {
@@ -167,13 +174,17 @@ export class OAuthService {
             const validationResult = await this.validateAuthorizationCode(
                 verifyCodeDto.code,
             );
+
+            if (!(await this.validateClientId(verifyCodeDto.clientId))) {
+                result.returnCode = ApiReturnCode.ClientIdInvalid;
+                return result;
+            }
+
             if (!validationResult.isSuccess) {
                 return validationResult;
             }
 
             const oauthCode = validationResult.data;
-
-            // todo  例如驗證 clientId 和 clientSecret 是否匹配
 
             // 生成存取令牌
             const tokenResult = await this.createJWTToken(oauthCode.userId);
@@ -219,60 +230,60 @@ export class OAuthService {
         return result;
     }
 
-    //  根據刷新令牌生成新的存取令牌
-    async refreshAccessToken(
-        refreshToken: string,
-    ): Promise<IApiResultWithData<AccessTokenRes>> {
-        const result: IApiResultWithData<AccessTokenRes> = {
-            isSuccess: false,
-            returnCode: ApiReturnCode.GeneralError,
-            data: undefined,
-        };
+    //  根據刷新令牌生成新的存取令牌 (暫時不做)
+    // async refreshAccessToken(
+    //     refreshToken: string,
+    // ): Promise<IApiResultWithData<AccessTokenRes>> {
+    //     const result: IApiResultWithData<AccessTokenRes> = {
+    //         isSuccess: false,
+    //         returnCode: ApiReturnCode.GeneralError,
+    //         data: undefined,
+    //     };
 
-        try {
-            // 驗證 refreshToken 是否有效
-            const decoded = this.jwtService.verify(refreshToken);
-            const oauthToken = await this.prisma.oAuthToken.findUnique({
-                where: { refreshToken },
-            });
+    //     try {
+    //         // 驗證 refreshToken 是否有效
+    //         const decoded = this.jwtService.verify(refreshToken);
+    //         const oauthToken = await this.prisma.oAuthToken.findUnique({
+    //             where: { refreshToken },
+    //         });
 
-            // 如果 refreshToken 在資料庫中不存在
-            if (!oauthToken || oauthToken.userId !== decoded.userId) {
-                result.returnCode = ApiReturnCode.RefreshTokenInvalid;
-            } else {
-                // 使用 JWT 生成新的 accessToken
-                const newAccessToken = this.jwtService.sign(
-                    { userId: decoded.userId },
-                    { expiresIn: '12h' },
-                );
-                const newExpiresAt = addHours(new Date(), 12); // 設定新的有效期
+    //         // 如果 refreshToken 在資料庫中不存在
+    //         if (!oauthToken || oauthToken.userId !== decoded.userId) {
+    //             result.returnCode = ApiReturnCode.RefreshTokenInvalid;
+    //         } else {
+    //             // 使用 JWT 生成新的 accessToken
+    //             const newAccessToken = this.jwtService.sign(
+    //                 { userId: decoded.userId },
+    //                 { expiresIn: '12h' },
+    //             );
+    //             const newExpiresAt = addHours(new Date(), 12); // 設定新的有效期
 
-                // 更新資料庫中的 accessToken 和 expiresAt
-                const updatedToken = await this.prisma.oAuthToken.update({
-                    where: { id: oauthToken.id },
-                    data: {
-                        accessToken: newAccessToken,
-                        expiresAt: newExpiresAt,
-                    },
-                });
+    //             // 更新資料庫中的 accessToken 和 expiresAt
+    //             const updatedToken = await this.prisma.oAuthToken.update({
+    //                 where: { id: oauthToken.id },
+    //                 data: {
+    //                     accessToken: newAccessToken,
+    //                     expiresAt: newExpiresAt,
+    //                 },
+    //             });
 
-                let accessTokenRes = new AccessTokenRes();
-                accessTokenRes.id = updatedToken.id;
-                accessTokenRes.accessToken = updatedToken.accessToken;
-                accessTokenRes.refreshToken = updatedToken.refreshToken;
-                accessTokenRes.expiresAt = updatedToken.expiresAt;
-                accessTokenRes.userId = updatedToken.userId;
+    //             let accessTokenRes = new AccessTokenRes();
+    //             accessTokenRes.id = updatedToken.id;
+    //             accessTokenRes.accessToken = updatedToken.accessToken;
+    //             accessTokenRes.refreshToken = updatedToken.refreshToken;
+    //             accessTokenRes.expiresAt = updatedToken.expiresAt;
+    //             accessTokenRes.userId = updatedToken.userId;
 
-                result.data = accessTokenRes;
-                result.returnCode = ApiReturnCode.Success;
-                result.isSuccess = true;
-            }
-        } catch (e) {
-            // 如果 refreshToken 無效或過期，拋出錯誤
-            result.returnCode = ApiReturnCode.RefreshTokenInvalid;
-            console.error(e); // 你可以將錯誤記錄到日誌系統
-        }
+    //             result.data = accessTokenRes;
+    //             result.returnCode = ApiReturnCode.Success;
+    //             result.isSuccess = true;
+    //         }
+    //     } catch (e) {
+    //         // 如果 refreshToken 無效或過期，拋出錯誤
+    //         result.returnCode = ApiReturnCode.RefreshTokenInvalid;
+    //         // todo write log
+    //     }
 
-        return result;
-    }
+    //     return result;
+    // }
 }

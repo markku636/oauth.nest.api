@@ -1,3 +1,4 @@
+import { JwtAuthGuard } from '@/guard/jwt-auth.guard';
 import { LoginDto } from '@/models/oauth/login.dto';
 import { VerifyCodeDto } from '@/models/oauth/validate.dto';
 import { generalValidateDto } from '@/utils/validation.helper';
@@ -9,14 +10,20 @@ import {
     Post,
     Query,
     Render,
+    Req,
     Res,
+    UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { JwtService } from '@nestjs/jwt';
+import { Request, Response } from 'express';
 import { OAuthService } from 'src/services/oauth.service';
 
 @Controller('oauth')
 export class OAuthController {
-    constructor(private readonly oauthService: OAuthService) {}
+    constructor(
+        private readonly oauthService: OAuthService,
+        private readonly jwtService: JwtService,
+    ) {}
 
     @Get('login')
     @Render('oauth/index') // 渲染名為 'oauth/index' 的模板
@@ -64,15 +71,16 @@ export class OAuthController {
         return res.status(200).json(result);
     }
 
-    // todo 處理刷新令牌的邏輯 (暫時不做)
-    // @Post('refresh')
-    // async refreshToken(@Body() body: { refreshToken: string }) {
-    //     const { refreshToken } = body;
+    // JWT 驗證保護的路由
+    @Post('get-protected-data')
+    @UseGuards(JwtAuthGuard)
+    @Get()
+    getProtectedData(@Req() req: Request) {
+        const user = req.user; // 取得驗證通過後的使用者資料
 
-    //     const tokenResult = await this.oauthService.refreshAccessToken(
-    //         refreshToken,
-    //     );
-
-    //     return tokenResult;
-    // }
+        return {
+            message: 'This is a protected route',
+            user: user, // 回傳使用者資料
+        };
+    }
 }

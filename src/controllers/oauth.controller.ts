@@ -23,7 +23,7 @@ export class OAuthController {
     OAuthPage(@Query('redirect_uri') redirectUri: string): object {
         // 檢查是否有 redirectUri，並將其傳遞到模板
         return {
-            title: 'Jkopay 登入',
+            title: 'Oauth 登入',
             subtitle: '是否允許Cool 3C登入',
             redirectUri: redirectUri || 'default_redirect_uri', // 如果沒提供，使用預設值
         };

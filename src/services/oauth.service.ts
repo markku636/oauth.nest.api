@@ -3,6 +3,7 @@ import { AccessTokenRes } from '@/models/oauth/access.token.res';
 import { LoginDto } from '@/models/oauth/login.dto';
 import { LoginRes } from '@/models/oauth/login.res';
 import { VerifyCodeDto } from '@/models/oauth/validate.dto';
+import { encryptPassword } from '@/utils/encrypt';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { addHours, addMinutes } from 'date-fns';
@@ -31,10 +32,15 @@ export class OAuthService {
             const code = uuidv4();
             const expiresAt = addMinutes(new Date(), 10); // 設定授權碼 10 分鐘內有效
 
+            let saltPassword = await encryptPassword(
+                loginDto.password,
+                process.env.SALT,
+            ); // 簡單加嚴處理
+
             const user = await this.prisma.user.findFirst({
                 where: {
                     email: loginDto.email,
-                    password: loginDto.password, // todo 密碼要經過哈希及加嚴處理，
+                    password: saltPassword,
                 },
             });
 

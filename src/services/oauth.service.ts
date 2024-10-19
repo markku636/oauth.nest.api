@@ -44,8 +44,6 @@ export class OAuthService {
                 },
             });
 
-            // todo  可以加一個client id 證明對方是什麼應用程式
-
             if (!user) {
                 result.returnCode = ApiReturnCode.UserNotExist;
                 result.validation = {

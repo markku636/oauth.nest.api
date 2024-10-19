@@ -1,11 +1,12 @@
+import { ApiReturnCode } from '@/enums/api-return-code';
 import {
     CanActivate,
     ExecutionContext,
+    HttpStatus,
     Injectable,
-    UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -13,10 +14,12 @@ export class JwtAuthGuard implements CanActivate {
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest<Request>();
+        const response = context.switchToHttp().getResponse<Response>();
         const token = this.extractTokenFromHeader(request);
 
         if (!token) {
-            throw new UnauthorizedException('Token not found');
+            this.failResponse(response, 'Token not found');
+            return false; // 確保返回 false 來阻止路由處理器繼續執行
         }
 
         try {
@@ -27,11 +30,20 @@ export class JwtAuthGuard implements CanActivate {
 
             // 將解析的 payload 賦值給 request 物件，供後續的控制器使用
             request.user = payload;
+            return true;
         } catch (error) {
-            throw new UnauthorizedException('Invalid or expired token');
+            this.failResponse(response, 'Invalid or expired token');
+            return false;
         }
+    }
 
-        return true;
+    private failResponse(response: Response, message: string) {
+        response.status(HttpStatus.UNAUTHORIZED).json({
+            isSuccess: false,
+            returnCode: ApiReturnCode.Unauthorized,
+            message: message,
+            data: null,
+        });
     }
 
     private extractTokenFromHeader(request: Request): string | null {

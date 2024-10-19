@@ -1,4 +1,4 @@
-export enum ApiReturnCode {
+export const enum ApiReturnCode {
     // 成功 > 2xxxx
     Success = 20000,
 
@@ -36,6 +36,7 @@ export enum ApiReturnCode {
     PreCheckSkusStockFail = 41007,
     PreCheckModelStockFail = 41008,
     QuantityLessThan1 = 41010,
+    Unauthorized = 41011,
 
     // 一般
     Authorize = 40100,

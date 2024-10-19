@@ -65,20 +65,14 @@ export class OAuthController {
     }
 
     // todo 處理刷新令牌的邏輯 (暫時不做)
-    @Post('refresh')
-    async refreshToken(@Body() body: { refreshToken: string }) {
-        const { refreshToken } = body;
+    // @Post('refresh')
+    // async refreshToken(@Body() body: { refreshToken: string }) {
+    //     const { refreshToken } = body;
 
-        const tokenResult = await this.oauthService.refreshAccessToken(
-            refreshToken,
-        );
+    //     const tokenResult = await this.oauthService.refreshAccessToken(
+    //         refreshToken,
+    //     );
 
-        return tokenResult;
-    }
-
-    // 測試用路徑
-    @Get('test')
-    async getHello(@Query() query): Promise<string> {
-        return await JSON.stringify(query);
-    }
+    //     return tokenResult;
+    // }
 }

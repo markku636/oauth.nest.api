@@ -13,9 +13,9 @@
 
 ## 佈署環境
 * 使用Powerhsell 佈署到Nas 
-* GCP 反向代理 + 個人 Nas 伺服器伺服器
+* GCP 反向代理 + 個人 Nas 伺服器
 
-測試
+## 測試
 *Jest
 *Rest Clinet 
 

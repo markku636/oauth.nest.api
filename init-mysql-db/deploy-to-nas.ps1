@@ -41,6 +41,6 @@ if ($existingImages) {
 docker --tls -H="$containerUrl" load --input $imageFilePath
 
 # 建立及啟動容器應用
-docker run -d --name $containerName --restart=always -p $port $imageName
+docker --tls -H="$containerUrl" run -d  --name $containerName --restart=always -p $port $imageName
 
 pause 
